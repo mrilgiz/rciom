@@ -1,25 +1,33 @@
-name: Create Archive
-on: [push]
+name: Create Resource Pack Archive
+
+on:
+  push:
+    branches:
+      - main  # запускается только при пуше в main
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: pull latest and remove old file from repo
-      run: |
-        git config --global user.name "usernamehere"
-        git config --global user.email "emailhere"
-        git config pull.rebase false
-        git pull
-        rm -f release.zip
-    - name: Archive Release
-      uses: thedoctor0/zip-release@master
-      with:
-        filename: 'release.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig'
-    - name: push changes to remote
-      run: |
-        git add -A
-        git commit -m "new pack"
-        git push --force
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create release zip
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: 'release.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+
+      - name: Upload to release branch
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
+          # Создать/обновить ветку releases
+          git fetch
+          git checkout -B releases
+          mv release.zip resourcepack.zip
+          git add resourcepack.zip
+          git commit -m "Update resource pack" || echo "No changes"
+          git push origin releases --force
