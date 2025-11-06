@@ -1,5 +1,6 @@
 name: Create Resource Pack Archive
-
+permissions:
+  contents: write
 on:
   push:
     branches:
