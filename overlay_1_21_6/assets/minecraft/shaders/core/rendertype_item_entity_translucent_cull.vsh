@@ -159,7 +159,7 @@ void main() {
         gl_Position = ProjMat * ModelViewMat * vec4(offset, 1.);
         finish = -6.;
         uv0 = vec2(x0, y0) * .5 + .5;
-    } else if (Color.xyz == vec3(1. / 255., 0., 3. / 255.) || Color.xyz == vec3(1. / 255., 0., 4. / 255.)) {
+    } else if (Color.xyz == vec3(1. / 255., 0., 3. / 255.) || Color.xyz == vec3(1. / 255., 0., 4. / 255.) || Color.xyz == vec3(1. / 255., 0., 5. / 255.)) {
         shadeColor = vec4(1.);
         vertexColor = vec4(1.);
         lightMapColor = vec4(1.);
@@ -167,7 +167,49 @@ void main() {
         float x0 = (id == 2 || id == 3) ? 1. : -1.;
         float y0 = (id == 0 || id == 3) ? 1. : -1.;
         gl_Position = vec4(x0, y0, 0.001, 1.);
-        finish = Color.xyz == vec3(1. / 255., 0., 4. / 255.) ? -4. : -3.;
+        if (Color.xyz == vec3(1. / 255., 0., 5. / 255.)) {
+            finish = -7.;
+        } else {
+            finish = Color.xyz == vec3(1. / 255., 0., 4. / 255.) ? -4. : -3.;
+        }
+        uv0 = vec2(x0, y0) * .5 + .5;
+    } else if (Color.xyz == vec3(0., 1. / 255., 0.) || Color.xyz == vec3(0., 1. / 255., 5. / 255.)) {
+        shadeColor = vec4(1.);
+        vertexColor = vec4(1.);
+        lightMapColor = vec4(1.);
+        int id = gl_VertexID % 4;
+        float x0 = (id == 2 || id == 3) ? 1. : -1.;
+        float y0 = (id == 0 || id == 3) ? 1. : -1.;
+        gl_Position = vec4(x0, y0, 0.001, 1.);
+        finish = -8.;
+        uv0 = vec2(x0, y0) * .5 + .5;
+    } else if (Color.x == 3. /255.) {
+        shadeColor = vec4(1.);
+        vertexColor = vec4(1.);
+        lightMapColor = vec4(1.);
+        int id = gl_VertexID % 4;
+        float x0 = (id == 2 || id == 3) ? 1. : -1.;
+        float y0 = (id == 0 || id == 3) ? 1. : -1.;
+        gl_Position = vec4(x0, y0, 0.001, 1.);
+        if (Color.z == 1. / 255.) {
+            finish = -9.;
+        } else if (Color.z == 2. / 255.) {
+            finish = -10.;
+        } else if (Color.z == 3. / 255.) {
+            finish = -11.;
+        } else if (Color.z == 4. / 255.) {
+            finish = -12.;
+        } else if (Color.z == 5. / 255.) {
+            finish = -13.;
+        } else if (Color.z == 6. / 255.) {
+            finish = -14.;
+        } else if (Color.z == 7. / 255.) {
+            finish = -15.;
+        } else if (Color.z == 8. / 255.) {
+            finish = -16.;
+        } else if (Color.z == 9. / 255.) {
+            finish = -17.;
+        }
         uv0 = vec2(x0, y0) * .5 + .5;
     } else if (Color.xyz == vec3(251. / 255.)) {
         shadeColor = vec4(0.);

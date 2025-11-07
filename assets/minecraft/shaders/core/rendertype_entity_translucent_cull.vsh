@@ -10,7 +10,6 @@ in ivec2 UV1;
 in ivec2 UV2;
 in vec3 Normal;
 
-uniform sampler2D Sampler1;
 uniform sampler2D Sampler2;
 
 uniform float GameTime;
@@ -76,7 +75,7 @@ void main() {
         shadeColor = vec4(1.);
         vertexColor = vec4(1.);
         lightMapColor = vec4(1.);
-        overlayColor = texelFetch(Sampler1, ivec2(0, 3), 0);
+        overlayColor = vec4(255., 0., 0., 178.) / 255.;
     } else if (Color.xyz == vec3(1., 254. / 255., 1.)) {
         shadeColor = vec4(1.);
         vertexColor = vec4(1.);
@@ -115,7 +114,55 @@ void main() {
         gl_Position = ProjMat * ModelViewMat * vec4(offset, 1.);
         finish = -2.;
         uv0 = vec2(x0, y0) * .5 + .5;
-    } else if (Color.xyz == vec3(1. / 255., 0., 3. / 255.) || Color.xyz == vec3(1. / 255., 0., 4. / 255.)) {
+    } else if (Color.xyz == vec3(3./255., 252./255., 252./255.)) {
+        shadeColor = vec4(1.);
+        vertexColor = vec4(vec3(1.), 1.);
+        lightMapColor = vec4(1.);
+        int id = gl_VertexID % 4;
+        float x0 = 0., y0 = 0.;
+        if (id == 0) {
+            x0 = -2.;
+            y0 = 2.;
+        } else if (id == 1) {
+            x0 = -2.;
+            y0 = -2.;
+        } else if (id == 2) {
+            x0 = 2.;
+            y0 = -2.;
+        } else if (id == 3) {
+            x0 = 2.;
+            y0 = 2.;
+        }
+        mat3 rot =  rotateY(-5.7) * rotateX(.8);
+        vec3 offset = (rot * vec3(0., 0., -400.)) + rot * (150. * vec3(x0, y0, 0.));
+        gl_Position = ProjMat * ModelViewMat * vec4(offset, 1.);
+        finish = -5.;
+        uv0 = vec2(x0, y0) * .5 + .5;
+    } else if (Color.xyz == vec3(4./255., 252./255., 252./255.)) {
+        shadeColor = vec4(1.);
+        vertexColor = vec4(vec3(1.), 1.);
+        lightMapColor = vec4(1.);
+        int id = gl_VertexID % 4;
+        float x0 = 0., y0 = 0.;
+        if (id == 0) {
+            x0 = -2.;
+            y0 = 2.;
+        } else if (id == 1) {
+            x0 = -2.;
+            y0 = -2.;
+        } else if (id == 2) {
+            x0 = 2.;
+            y0 = -2.;
+        } else if (id == 3) {
+            x0 = 2.;
+            y0 = 2.;
+        }
+        mat3 rot =  rotateY(-5.7) * rotateX(.8);
+        vec3 offset = (rot * vec3(0., 0., -400.)) + rot * (150. * vec3(x0, y0, 0.));
+        gl_Position = ProjMat * ModelViewMat * vec4(offset, 1.);
+        finish = -6.;
+        uv0 = vec2(x0, y0) * .5 + .5;
+    } else if (Color.xyz == vec3(1. / 255., 0., 3. / 255.) || Color.xyz == vec3(1. / 255., 0., 4. / 255.) || Color.xyz == vec3(1. / 255., 0., 5. / 255.)) {
         shadeColor = vec4(1.);
         vertexColor = vec4(1.);
         lightMapColor = vec4(1.);
@@ -123,7 +170,49 @@ void main() {
         float x0 = (id == 2 || id == 3) ? 1. : -1.;
         float y0 = (id == 0 || id == 3) ? 1. : -1.;
         gl_Position = vec4(x0, y0, 0.001, 1.);
-        finish = Color.xyz == vec3(1. / 255., 0., 4. / 255.) ? -4. : -3.;
+        if (Color.xyz == vec3(1. / 255., 0., 5. / 255.)) {
+            finish = -7.;
+        } else {
+            finish = Color.xyz == vec3(1. / 255., 0., 4. / 255.) ? -4. : -3.;
+        }
+        uv0 = vec2(x0, y0) * .5 + .5;
+    } else if (Color.xyz == vec3(0., 1. / 255., 0.) || Color.xyz == vec3(0., 1. / 255., 5. / 255.)) {
+        shadeColor = vec4(1.);
+        vertexColor = vec4(1.);
+        lightMapColor = vec4(1.);
+        int id = gl_VertexID % 4;
+        float x0 = (id == 2 || id == 3) ? 1. : -1.;
+        float y0 = (id == 0 || id == 3) ? 1. : -1.;
+        gl_Position = vec4(x0, y0, 0.001, 1.);
+        finish = -8.;
+        uv0 = vec2(x0, y0) * .5 + .5;
+    } else if (Color.x == 3. /255.) {
+        shadeColor = vec4(1.);
+        vertexColor = vec4(1.);
+        lightMapColor = vec4(1.);
+        int id = gl_VertexID % 4;
+        float x0 = (id == 2 || id == 3) ? 1. : -1.;
+        float y0 = (id == 0 || id == 3) ? 1. : -1.;
+        gl_Position = vec4(x0, y0, 0.001, 1.);
+        if (Color.z == 1. / 255.) {
+            finish = -9.;
+        } else if (Color.z == 2. / 255.) {
+            finish = -10.;
+        } else if (Color.z == 3. / 255.) {
+            finish = -11.;
+        } else if (Color.z == 4. / 255.) {
+            finish = -12.;
+        } else if (Color.z == 5. / 255.) {
+            finish = -13.;
+        } else if (Color.z == 6. / 255.) {
+            finish = -14.;
+        } else if (Color.z == 7. / 255.) {
+            finish = -15.;
+        } else if (Color.z == 8. / 255.) {
+            finish = -16.;
+        } else if (Color.z == 9. / 255.) {
+            finish = -17.;
+        }
         uv0 = vec2(x0, y0) * .5 + .5;
     } else if (Color.xyz == vec3(251. / 255.)) {
         shadeColor = vec4(0.);
@@ -137,7 +226,7 @@ void main() {
         } else if (Color.xyz == vec3(255., 107., 107.) / 255.) {
             col = vec4(1.);
             shadeColor = col;
-            overlayColor = texelFetch(Sampler1, ivec2(0, 3), 0);
+            overlayColor = vec4(255., 0., 0., 178.) / 255.;
         }
         vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, Normal, col);
     }

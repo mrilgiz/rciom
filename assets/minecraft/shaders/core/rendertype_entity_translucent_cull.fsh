@@ -68,16 +68,6 @@ const vec4 MAGMA_OVERLAY = MAGMA_OVERLAY_1;
 const vec3 MAGMA_BRIGHT = MAGMA_BRIGHT_1;
 const vec3 MAGMA_MAX = MAGMA_MAX_1;
 
-// const vec3 MAGMA_RED = MAGMA_BASE_2;
-// const vec4 MAGMA_OVERLAY = MAGMA_OVERLAY_2;
-// const vec3 MAGMA_BRIGHT = MAGMA_BRIGHT_2;
-// const vec3 MAGMA_MAX = MAGMA_MAX_2;
-
-// const vec3 MAGMA_RED = MAGMA_BASE_3;
-// const vec4 MAGMA_OVERLAY = MAGMA_OVERLAY_3;
-// const vec3 MAGMA_BRIGHT = MAGMA_BRIGHT_3;
-// const vec3 MAGMA_MAX = MAGMA_MAX_3;
-
 vec4 molten(vec2 p) {
     vec4 col = MAGMA_OVERLAY;
     float column = floor(p.x / 3.);
@@ -235,14 +225,6 @@ const vec3 GLTICH_A = GLITCH_A_1;
 const vec3 GLTICH_B = GLITCH_B_1;
 const vec3 GLTICH_F = GLITCH_F_1;
 
-// const vec3 GLTICH_A = GLITCH_A_2;
-// const vec3 GLTICH_B = GLITCH_B_2;
-// const vec3 GLTICH_F = GLITCH_F_2;
-
-// const vec3 GLTICH_A = GLITCH_A_3;
-// const vec3 GLTICH_B = GLITCH_B_3;
-// const vec3 GLTICH_F = GLITCH_F_3;
-
 vec4 finishGlitch(vec4 rgb, vec2 dim, vec2 uv) {
     float time = GameTime * 800.;
     vec2 coord = uv / 2.;
@@ -273,16 +255,12 @@ vec4 finishGlitch(vec4 rgb, vec2 dim, vec2 uv) {
 }
 
 vec4 finishTile(vec4 rgb, vec2 dim, vec2 uv) {
-     // orange
     vec3 DITHER_A_1 = mix(vec3(0xff, 0xca, 0x35)/255., vec3(0xff, 0x55, 0x35)/255., 0.33);
     vec3 DITHER_B_1 = vec3(0xe9, 0x69, 0x2e)/255.;
-     // pink
     vec3 DITHER_A_2 = vec3(0xac, 0x42, 0xb6)/255.;
     vec3 DITHER_B_2 = vec3(0xff, 0x77, 0xb6)/255.;
-     // green
     vec3 DITHER_A_3 = vec3(0x62, 0xa0, 0x39)/255.;
     vec3 DITHER_B_3 = vec3(0xca, 0xd8, 0x34)/255.;
-    // cyan
     vec3 DITHER_A_4 = vec3(0x88, 0xff, 0xaf)/255.;
     vec3 DITHER_B_4 = vec3(0x41, 0x9e, 0x94)/255.;
 
@@ -299,7 +277,6 @@ vec4 finishTile(vec4 rgb, vec2 dim, vec2 uv) {
     float t = max(0., sign(max(abs(coord.x), abs(coord.y)) - local));
     float t0 = mix(t, 1. - t, mod(floor(time), 2.));
     rgb.rgb = mix(rgb.rgb, min(vec3(1.0), rgb.rgb + vec3(0.1)), t0);
-    //rgb.rgb = rgb.r * mix(DITHER_A, DITHER_B, t0);
     return rgb;
 }
 
@@ -318,7 +295,6 @@ float crateTile(vec2 uv, float time) {
 
 vec4 finishCrate(vec4 rgb, vec2 dim, vec2 uv) {
     float norm = max(0., normalize(normal.xyz).y);
-    //uv.y += sin(uv.x / 10. + GameTime * 2000. + (uv.x + uv.y) / 4.) * 1.1; 
     float x = crateTile(uv, GameTime) * .9 + crateTile(rotate(uv, 0.1), GameTime * (2./3.)) * .6;
     rgb.rgb += vec3(x) * vec3(.42, .4, .29) * .82 * (1. - norm);
     return rgb;
@@ -407,6 +383,191 @@ vec4 wh(vec2 uv) {
     return w;
 }
 
+vec4 heartbeatEffect(vec2 uv) {
+    float time = GameTime * 3000.0;
+    
+    float beat1 = sin(time) * 0.5 + 0.5;
+    float beat2 = sin(time * 1.3) * 0.5 + 0.5;
+    float beat3 = sin(time * 0.7 + sin(time * 0.2) * 3.0) * 0.5 + 0.5;
+    float beat4 = sin(time * 2.1) * 0.5 + 0.5;
+    
+    float heartbeat = beat1 * beat2 * beat3 * beat4;
+    
+    float strongBeat = step(0.6, heartbeat) * (heartbeat - 0.6) * 2.5;
+    float mediumBeat = step(0.3, heartbeat) * step(heartbeat, 0.6) * (heartbeat - 0.3) * 1.0;
+    float weakBeat = step(0.1, heartbeat) * step(heartbeat, 0.3) * heartbeat * 0.5;
+    
+    float intensity = strongBeat + mediumBeat + weakBeat;
+    
+    vec2 center = abs(uv - 0.5);
+    float vignette = max(center.x, center.y) * 2.0;
+    vignette = smoothstep(0.2, 0.8, vignette);
+    
+    vec3 redTint = vec3(1.0, 0.1, 0.1);
+    float alpha = intensity * mix(0.05, 0.15, strongBeat / (intensity + 0.01)) * vignette;
+    
+    return vec4(redTint, alpha);
+}
+
+vec4 terminalFlickerEffect(vec2 uv) {
+    float time = GameTime * 300.0;
+    float flicker = sin(time * 5.0) * 0.15 + sin(time * 12.0) * 0.08 + 0.8;
+    vec3 greenTint = vec3(0.1, 1.0, 0.3);
+    return vec4(greenTint, flicker * 0.05);
+}
+
+vec4 glitchEffect(vec2 uv) {
+    float time = GameTime * 150.0;
+    float glitch = step(0.96, fract(sin(time + uv.y * 200.0) * 43758.5453));
+    vec3 color = vec3(1.0, 0.2, 0.2);
+    return vec4(color, glitch * 0.4);
+}
+
+vec4 scanLineEffect(vec2 uv) {
+    float time = GameTime * 80.0;
+    vec4 result = vec4(0.0);
+    
+    float scanY1 = mod(time, 1.0);
+    float line1 = 1.0 - smoothstep(0.0, 0.03, abs(uv.y - scanY1));
+    result += vec4(vec3(0.3, 0.8, 1.0), line1 * 0.6);
+    
+    float scanY2 = mod(time * 1.5 + 0.3, 1.0);
+    float line2 = 1.0 - smoothstep(0.0, 0.01, abs(uv.y - scanY2));
+    result += vec4(vec3(0.5, 1.0, 0.8), line2 * 0.4);
+    
+    float scanY3 = mod(time * 0.7 + 0.6, 1.0);
+    float line3 = 1.0 - smoothstep(0.0, 0.02, abs(uv.y - scanY3));
+    result += vec4(vec3(0.2, 0.6, 1.0), line3 * 0.3);
+    
+    return result;
+}
+
+vec4 infectionEffect1(vec2 uv) {
+    float time = GameTime * 100.0;
+    vec2 pixelUV = floor(uv * 32.0) / 32.0;
+    vec4 infection = vec4(0.0);
+    
+    vec2 corners[4];
+    corners[0] = vec2(0.0, 0.0);
+    corners[1] = vec2(1.0, 0.0);
+    corners[2] = vec2(0.0, 1.0);
+    corners[3] = vec2(1.0, 1.0);
+    
+    for(int i = 0; i < 4; i++) {
+        vec2 corner = corners[i];
+        vec2 toCenter = vec2(0.5) - corner;
+        float cornerDist = length(pixelUV - corner);
+        
+        float tentacleAngle = atan(toCenter.y, toCenter.x) + sin(time * 0.5 + float(i)) * 0.3;
+        vec2 tentacleDir = vec2(cos(tentacleAngle), sin(tentacleAngle));
+        
+        float tentacleProgress = mod(time * 0.3 + float(i) * 0.25, 1.0);
+        float tentacleLength = tentacleProgress * 0.8;
+        
+        vec2 tentaclePos = corner + tentacleDir * tentacleLength;
+        float distToTentacle = length(pixelUV - tentaclePos);
+        
+        float thickness = 0.05 + sin(time + float(i) * 2.0) * 0.02;
+        float tentacleIntensity = 1.0 - smoothstep(0.0, thickness, distToTentacle);
+        
+        float pulse = sin(time * 2.0 + cornerDist * 10.0 + float(i)) * 0.3 + 0.7;
+        tentacleIntensity *= pulse;
+        
+        vec3 infectionColor = mix(vec3(0.2, 0.8, 0.3), vec3(0.8, 0.2, 0.8), sin(time + float(i)) * 0.5 + 0.5);
+        
+        infection.rgb += infectionColor * tentacleIntensity * 0.4;
+        infection.a = max(infection.a, tentacleIntensity * 0.6);
+    }
+    
+    return infection;
+}
+
+vec4 infectionEffect2(vec2 uv) {
+    float time = GameTime * 150.0;
+    vec2 pixelUV = floor(uv * 96.0) / 96.0;
+    vec4 infection = vec4(0.0);
+    
+    vec2 center = vec2(0.5);
+    vec2 distFromCenter = abs(pixelUV - center);
+    float squareDist = max(distFromCenter.x, distFromCenter.y);
+    float infectionRadius = mod(time * 0.3, 1.0);
+    
+    float ringIntensity = step(abs(squareDist - infectionRadius), 0.03);
+    ringIntensity *= step(0.5, sin(time * 4.0 + squareDist * 40.0));
+    
+    vec3 redInfection = vec3(0.9, 0.1, 0.2);
+    infection.rgb += redInfection * ringIntensity * 0.7;
+    infection.a = ringIntensity * 0.6;
+    
+    return infection;
+}
+
+vec4 infectionEffect3(vec2 uv) {
+    float time = GameTime * 80.0;
+    vec2 pixelUV = floor(uv * 112.0) / 112.0;
+    vec4 infection = vec4(0.0);
+    
+    vec2 grid = floor(pixelUV * 16.0);
+    float gridPattern = step(0.5, mod(grid.x + grid.y, 2.0));
+    
+    float spreadTime = mod(time * 0.2, 4.0);
+    vec2 distFromCenter = abs(pixelUV - vec2(0.5));
+    float spreadMask = step(max(distFromCenter.x, distFromCenter.y), spreadTime * 0.25);
+    
+    float intensity = gridPattern * spreadMask;
+    intensity *= step(0.3, sin(time * 5.0 + dot(grid, vec2(1.0))));
+    
+    vec3 blueInfection = vec3(0.1, 0.4, 0.9);
+    infection.rgb += blueInfection * intensity * 0.8;
+    infection.a = intensity * 0.7;
+    
+    return infection;
+}
+
+vec4 infectionEffect4(vec2 uv) {
+    float time = GameTime * 200.0;
+    vec2 pixelUV = floor(uv * 104.0) / 104.0;
+    vec4 infection = vec4(0.0);
+    
+    for(int i = 0; i < 8; i++) {
+        float angle = float(i) * 0.785398;
+        vec2 direction = vec2(cos(angle), sin(angle));
+        
+        float linePos = dot(pixelUV, direction);
+        float zigzag = step(0.7, sin(linePos * 25.0 + time * 3.0 + float(i)));
+        
+        vec2 distFromCenter = abs(pixelUV - vec2(0.5));
+        float centerMask = 1.0 - step(0.6, max(distFromCenter.x, distFromCenter.y));
+        zigzag *= centerMask;
+        
+        vec3 yellowInfection = vec3(0.9, 0.9, 0.1);
+        infection.rgb += yellowInfection * zigzag * 0.4;
+        infection.a = max(infection.a, zigzag * 0.5);
+    }
+    
+    return infection;
+}
+
+vec4 infectionEffect5(vec2 uv) {
+    float time = GameTime * 120.0;
+    vec2 pixelUV = floor(uv * 88.0) / 88.0;
+    vec4 infection = vec4(0.0);
+    
+    vec2 blockPos = floor(pixelUV * 12.0);
+    float noise1 = step(0.6, sin(blockPos.x * 2.0 + time * 0.7));
+    float noise2 = step(0.4, cos(blockPos.y * 1.5 - time * 0.5));
+    
+    float organic = noise1 * noise2;
+    float pulse = step(0.3, sin(time * 2.0 + dot(blockPos, vec2(1.0))));
+    organic *= pulse;
+    
+    vec3 purpleInfection = vec3(0.7, 0.2, 0.9);
+    infection.rgb += purpleInfection * organic * 0.6;
+    infection.a = organic * 0.5;
+    
+    return infection;
+}
+
 void main() {
     vec4 rgb = texture(Sampler0, texCoord0);
     vec4 vCol = vertexColor;
@@ -437,30 +598,20 @@ void main() {
         if (finish == 1.) {
             rgb = finishRainbow(rgb, dim, uv);
         } else if (finish == 2.) {
-            // GOLD
             float per = 12000.;
             float x0 = mod(floor(GameTime * per), 30.) * 16.;
             vec4 overlay11 = texture(Sampler0, (mod(uv, 16.) + vec2(x0 + 16., 272.)) / dim);
             rgb.rgb = texture(Sampler0, (vec2(0., 272. + round(.8 * rgb.x * 9. + 0.25) + round(overlay11.a))) / dim).rgb;
         } else if (finish == 3.) {
-            // GALAXY
             rgb = finishGalaxy(rgb, dim, uv, uv*2.);
         } else if (finish == 4.) {
-            // MAGMA
             vec3 col = MAGMA_RED * 3.;
             vec4 s1 = molten(floor(mod(uv, 128.)));
-            //col = mix(col, s1.rgb, s1.a);
             vec4 s2 = molten(floor(mod(uv * 2. + vec2(722., 63.), 128.)));
-            //col = mix(col, s2.rgb, s2.a * 0.5);
-            
-            //col = mix(col, s1.rgb + s2.rgb, (s1.a + s2.a * 0.4));
-
             vec3 rgbsum = floor((s1.rgb + s2.rgb) * 4. + 0.5) / 4.;
             col = mix(col, rgbsum, (s1.a + s2.a * 0.4));
-
             rgb.rgb *= col;
         } else if (finish == 5.) {
-            // BUBBLES
             vec2 p2 = uv * 1.5;
             p2 = rotate(p2, 0.15);
             vec2 bob = vec2(sin(GameTime * 4000.) * 0.75, 0.);
@@ -473,7 +624,6 @@ void main() {
                 texture(Sampler0, (mod(uv * 1.25 - bob + vec2(12., GameTime * 3000. + 3000.), 16.) + vec2(64., 288.)) / dim).rgb +
                 texture(Sampler0, (mod(uv * 1.   - bob1 + vec2(0., GameTime * 8000.), 16.) + vec2(48., 288.)) / dim).rgb;
         } else if (finish == 6.) {
-            // FLORAL
             float t = GameTime * 100. + (uv.x + uv.y) / 32.;
             float pct = sin(fract(t) * (3.141593 / 2.));
             pct *= pct;
@@ -490,11 +640,8 @@ void main() {
             col = mix(col, f.rgb, f.a);
             rgb.rgb *= col;
         } else if (finish == 7.) {
-            // MATRIX
             if (true) {
-                vec3 shade = vec3(0., 1.0, 0.3);// * 1.2; // 1
-                // vec3 shade = vec3(1.0, 0.1, 0.0) * 1.5; // 2
-                //vec3 shade = vec3(0.3, 1.2, 1.4); // 2
+                vec3 shade = vec3(0., 1.0, 0.3);
                 vec3 col = matrixOld(uv * 1.5, shade, dim) * .7 +
                     min(matrixOld(uv * 3. - 2., shade, dim) * .5, .25);
                 rgb.rgb *= shade * 0.1 * 0.95 + 0.05;
@@ -529,12 +676,32 @@ void main() {
         rgb = wh(texCoord0);
         noshade = 1.;
         e = 1.;
-    }
-
-    if (floor(finish) == -3.) {
+    } else if (floor(finish) == -3.) {
         fragColor = vec4(vec3(16.), mix(208., 192., texCoord0.y))/255.;
     } else if (floor(finish) == -4.) {
         fragColor = vec4(vec3(1./255.), 1.);
+    } else if (floor(finish) == -7.) {
+        fragColor = vec4(0.0);
+    } else if (floor(finish) == -8.) {
+        fragColor = vec4(0.0);
+    } else if (floor(finish) == -9.) {
+        fragColor = heartbeatEffect(texCoord0);
+    } else if (floor(finish) == -10.) {
+        fragColor = terminalFlickerEffect(texCoord0);
+    } else if (floor(finish) == -11.) {
+        fragColor = glitchEffect(texCoord0);
+    } else if (floor(finish) == -12.) {
+        fragColor = scanLineEffect(texCoord0);
+    } else if (floor(finish) == -13.) {
+        fragColor = infectionEffect1(texCoord0);
+    } else if (floor(finish) == -14.) {
+        fragColor = infectionEffect2(texCoord0);
+    } else if (floor(finish) == -15.) {
+        fragColor = infectionEffect3(texCoord0);
+    } else if (floor(finish) == -16.) {
+        fragColor = infectionEffect4(texCoord0);
+    } else if (floor(finish) == -17.) {
+        fragColor = infectionEffect5(texCoord0);
     } else if (rgb == vec4(0., 1., 1., 1.)) {
         fragColor = vec4(0.);
     } else {
