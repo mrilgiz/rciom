@@ -1,6 +1,49 @@
 {
   "pack": {
-    "pack_format": 64,
+		"pack_format": 42,
+		"min_format": 42,
+		"max_format": 69,
     "description": "example objmc pack"
-  }
+  },
+  
+	"overlays": {
+		"entries": [
+			{
+				"directory": "overlay_1_21_2",
+				"formats": [
+					42,
+					69
+				],
+				"min_format": 42,
+				"max_format": 69
+			},
+			{
+				"directory": "overlay_1_21_5",
+				"formats": [
+					55,
+					69
+				],
+				"min_format": 55,
+				"max_format": 69
+			},
+			{
+				"directory": "overlay_1_21_6",
+				"formats": [
+					63,
+					69
+				],
+				"min_format": 63,
+				"max_format": 69
+			},
+			{
+				"directory": "overlay_1_21_9",
+				"formats": [
+					69,
+					69
+				],
+				"min_format": 69,
+				"max_format": 69
+			}
+		]
+	}
 }
